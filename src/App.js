@@ -78,16 +78,22 @@ const App = () => {
         number: newNumber,
       };
 
-      personService.create(personObject).then((returnedPerson) => {
-        setNotification({
-          message: `Added ${returnedPerson.name}`,
-          variant: "success",
-        });
-        resetNotification();
-        setPersons(persons.concat(returnedPerson));
-        setNewName("");
-        setNewNumber("");
-      });
+      personService.create(personObject)
+        .then((returnedPerson) => {
+          setNotification({
+            message: `Added ${returnedPerson.name}`,
+            variant: "success",
+          });
+          resetNotification();
+          setPersons(persons.concat(returnedPerson));
+          setNewName("");
+          setNewNumber("");
+        })
+        .catch((error) => {
+          console.log(error)
+          setNotification(prev => ({message: error.response.data.error, variant: "error"}))
+          resetNotification()
+        })
     }
   };
 
