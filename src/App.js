@@ -68,11 +68,9 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault();
 
-    // check if name already exists
     const personExists = persons.find((person) => person.name === newName);
-    if (personExists) alert(`${newName} is already added to phonebook`);
-
-    if (!personExists) {
+    
+    if (!personExists || window.confirm(`${newName} is already added to phonebook. Update number?`)) {
       const personObject = {
         name: newName,
         number: newNumber,
@@ -81,11 +79,15 @@ const App = () => {
       personService.create(personObject)
         .then((returnedPerson) => {
           setNotification({
-            message: `Added ${returnedPerson.name}`,
+            message: `${personExists ? "Updated" : "Added"} ${returnedPerson.name}`,
             variant: "success",
           });
           resetNotification();
-          setPersons(persons.concat(returnedPerson));
+          if (personExists) {
+            setPersons(persons.map(person => person.id === returnedPerson.id ? returnedPerson : person));
+          } else {
+            setPersons(persons.concat(returnedPerson));
+          }
           setNewName("");
           setNewNumber("");
         })
